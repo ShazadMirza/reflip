@@ -82,18 +82,16 @@ app.use((req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`
-╔═══════════════════════════════════════════════════════╗
-║   ReferralFlow Reflip Server                          ║
-║   Environment: ${process.env.NODE_ENV || 'development'}                            ║
-║   Port: ${PORT}                                        ║
-║   Time: ${new Date().toISOString()}          ║
-╚═══════════════════════════════════════════════════════╝
-  `);
-});
+// Start server (only in local dev, not on Vercel)
+if (require.main === module) {
+  app.listen(PORT, () => {
+      console.log(`
+                    ReferralFlow Reflip Server
+        Environment: ${process.env.NODE_ENV || 'development'}
+        Port: ${PORT}
+        Time: ${new Date().toISOString()}
+      `);
+        });
+        }
 
-module.exports = app;
-
-// Made with Bob
+        module.exports = app;
