@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reflip - Intelligent Referral Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -12,1049 +14,538 @@
                     colors: {
                         'ibm-blue': '#0051A5',
                         'ibm-blue-dark': '#003d7a',
+                        'ibm-blue-light': '#4589ff',
+                    },
+                    fontFamily: {
+                        sans: ['IBM Plex Sans', 'sans-serif'],
+                        mono: ['IBM Plex Mono', 'monospace'],
                     }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'IBM Plex Sans', sans-serif; }
+
+        /* ─── Sidebar ─────────────────────────────── */
+        #sidebar { transition: transform 0.3s ease; }
+        #sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 40;
         }
-        .sidebar-link {
-            transition: all 0.2s ease;
+        #sidebar-overlay.active { display: block; }
+
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed; top: 0; left: 0; bottom: 0;
+                z-index: 50; transform: translateX(-100%); width: 280px !important;
+            }
+            #sidebar.open { transform: translateX(0); }
         }
-        .sidebar-link:hover {
-            background-color: rgba(0, 81, 165, 0.1);
-            border-left: 4px solid #0051A5;
-        }
-        .sidebar-link.active {
-            background-color: rgba(0, 81, 165, 0.15);
-            border-left: 4px solid #0051A5;
-            font-weight: 600;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .status-synced {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-        .status-error {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        .confidence-bar {
-            height: 8px;
-            border-radius: 4px;
-            background-color: #e5e7eb;
-            overflow: hidden;
-        }
-        .confidence-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        .confidence-high {
-            background-color: #10b981;
-        }
-        .confidence-medium {
-            background-color: #f59e0b;
-        }
-        .confidence-low {
-            background-color: #ef4444;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 50;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.2s ease;
-        }
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .spinner {
-            border: 3px solid #f3f4f6;
-            border-top: 3px solid #0051A5;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .fallback-row {
-            background-color: #fef9e7 !important;
-        }
-        .fallback-row:hover {
-            background-color: #fef3c7 !important;
-        }
-        .ai-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .ai-status-success {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        .ai-status-fallback {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-        .info-icon {
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-        }
-        .info-icon:hover {
-            background-color: rgba(0, 0, 0, 0.2);
-            transform: scale(1.1);
-        }
-        .tooltip {
-            position: absolute;
-            background-color: #1f2937;
-            color: white;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 1000;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .tooltip::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-bottom: 4px solid #1f2937;
-        }
-        .tooltip.show {
-            opacity: 1;
-        }
+
+        .sidebar-link { transition: all 0.2s ease; }
+        .sidebar-link:hover { background-color: rgba(0,81,165,0.08); border-left: 3px solid #0051A5; }
+        .sidebar-link.active { background-color: rgba(0,81,165,0.12); border-left: 3px solid #0051A5; font-weight: 600; color: #0051A5; }
+
+        /* ─── Badges ──────────────────────────────── */
+        .status-badge { display:inline-flex; align-items:center; padding:.2rem .65rem; border-radius:9999px; font-size:.7rem; font-weight:600; white-space:nowrap; }
+        .status-synced  { background:#d1fae5; color:#065f46; }
+        .status-pending { background:#fef3c7; color:#92400e; }
+        .status-error   { background:#fee2e2; color:#991b1b; }
+
+        .confidence-bar { height:6px; border-radius:3px; background:#e5e7eb; overflow:hidden; }
+        .confidence-fill { height:100%; transition:width .4s ease; border-radius:3px; }
+        .confidence-high   { background:linear-gradient(90deg,#059669,#10b981); }
+        .confidence-medium { background:linear-gradient(90deg,#d97706,#f59e0b); }
+        .confidence-low    { background:linear-gradient(90deg,#dc2626,#ef4444); }
+
+        .ai-status-badge { display:inline-flex; align-items:center; gap:.35rem; padding:.2rem .65rem; border-radius:9999px; font-size:.7rem; font-weight:600; white-space:nowrap; }
+        .ai-status-success  { background:#d1fae5; color:#065f46; }
+        .ai-status-fallback { background:#fef3c7; color:#92400e; }
+
+        .fallback-row { background:#fffbeb !important; }
+        .fallback-row:hover { background:#fef3c7 !important; }
+
+        /* ─── Modal ───────────────────────────────── */
+        .modal { display:none; position:fixed; z-index:60; inset:0; background:rgba(0,0,0,0.55); animation:fadeIn .2s ease; }
+        .modal.active { display:flex; align-items:flex-end; justify-content:center; }
+        @media(min-width:640px) { .modal.active { align-items:center; } }
+        .modal-content { animation:slideUp .3s ease; width:100%; }
+        @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+        @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+        .spinner { border:3px solid #e5e7eb; border-top:3px solid #0051A5; border-radius:50%; width:22px; height:22px; animation:spin .9s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        /* ─── Tooltip ─────────────────────────────── */
+        .tooltip { position:fixed; background:#1f2937; color:#fff; padding:.4rem .65rem; border-radius:.4rem; font-size:.7rem; white-space:nowrap; z-index:1000; pointer-events:none; opacity:0; transition:opacity .2s ease; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+        .tooltip.show { opacity:1; }
+        .info-icon { cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:rgba(0,0,0,.12); transition:all .2s ease; flex-shrink:0; }
+        .info-icon:hover { background:rgba(0,0,0,.22); transform:scale(1.15); }
+
+        /* ─── Stat cards ──────────────────────────── */
+        .stat-card { background:#fff; border-radius:12px; border:1px solid #e2e8f0; padding:1.25rem; position:relative; overflow:hidden; transition:box-shadow .2s ease; }
+        .stat-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#0051A5,#4589ff); transform:scaleX(0); transition:transform .3s ease; transform-origin:left; }
+        .stat-card:hover::after { transform:scaleX(1); }
+        .stat-card:hover { box-shadow:0 4px 20px rgba(0,81,165,.12); }
+
+        /* ─── Referral cards (mobile) ─────────────── */
+        .referral-card { background:#fff; border-radius:12px; border:1px solid #e2e8f0; padding:1rem; transition:box-shadow .2s ease; }
+        .referral-card:hover { box-shadow:0 4px 16px rgba(0,81,165,.1); }
+        .fallback-card { background:#fffbeb !important; border-color:#fde68a !important; }
+
+        /* ─── Notification ────────────────────────── */
+        .notification { position:fixed; top:1rem; right:1rem; left:1rem; padding:.75rem 1.25rem; border-radius:10px; font-size:.875rem; font-weight:600; z-index:100; animation:slideDown .3s ease; }
+        @media(min-width:640px) { .notification { left:auto; width:auto; max-width:320px; } }
+        @keyframes slideDown { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+        /* ─── Bottom nav ──────────────────────────── */
+        #bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #e2e8f0; z-index:30; padding-bottom:env(safe-area-inset-bottom); }
+        @media(max-width:1023px) { #bottom-nav { display:flex; } #main-content-area { padding-bottom:5rem; } }
+
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-track { background:#f1f5f9; }
+        ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:99px; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
-    <!-- Main Container -->
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-lg flex flex-col">
-            <!-- Logo/Brand -->
-            <div class="p-6 border-b border-slate-200">
-                <h1 class="text-2xl font-bold text-ibm-blue">Reflip</h1>
-                <p class="text-xs text-slate-500 mt-1">Intelligent Referral Management</p>
+
+<!-- Mobile top header -->
+<header class="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+    <button id="hamburgerBtn" class="p-2 -ml-1 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="flex items-center gap-2">
+        <div class="w-7 h-7 bg-ibm-blue rounded-md flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+        </div>
+        <span class="font-bold text-ibm-blue text-lg tracking-tight">Reflip</span>
+    </div>
+    <button id="mobileNewBtn" class="bg-ibm-blue text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm active:bg-ibm-blue-dark">+ New</button>
+</header>
+
+<div id="sidebar-overlay"></div>
+
+<div class="flex h-screen overflow-hidden pt-14 lg:pt-0">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0 h-full overflow-y-auto">
+        <div class="p-5 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-9 h-9 bg-ibm-blue rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
             </div>
-            
-            <!-- Navigation -->
-            <nav class="flex-1 p-4 space-y-2">
-                <a href="#dashboard" class="sidebar-link active flex items-center px-4 py-3 text-slate-700 rounded-lg">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="#referrals" class="sidebar-link flex items-center px-4 py-3 text-slate-700 rounded-lg">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    Referral Leads
-                </a>
-                <a href="#insights" class="sidebar-link flex items-center px-4 py-3 text-slate-700 rounded-lg">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                    </svg>
-                    AI Insights
-                </a>
-            </nav>
-            
-            <!-- User Profile -->
-            <div class="p-4 border-t border-slate-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-ibm-blue rounded-full flex items-center justify-center text-white font-semibold">
-                        JD
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-semibold text-slate-700">John Doe</p>
-                        <p class="text-xs text-slate-500">Relationship Manager</p>
-                    </div>
+            <div>
+                <h1 class="text-xl font-bold text-ibm-blue leading-none">Reflip</h1>
+                <p class="text-[10px] text-slate-400 mt-0.5 leading-none">Intelligent Referral Mgmt</p>
+            </div>
+        </div>
+        <nav class="flex-1 p-3 space-y-1">
+            <p class="px-3 pt-2 pb-1 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Menu</p>
+            <a href="#dashboard" class="sidebar-link nav-link active flex items-center px-4 py-3 text-slate-700 rounded-lg text-sm" data-section="dashboard">
+                <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Dashboard
+            </a>
+            <a href="#referrals" class="sidebar-link nav-link flex items-center px-4 py-3 text-slate-700 rounded-lg text-sm" data-section="referrals">
+                <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                Referral Leads
+            </a>
+            <a href="#insights" class="sidebar-link nav-link flex items-center px-4 py-3 text-slate-700 rounded-lg text-sm" data-section="insights">
+                <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                AI Insights
+            </a>
+        </nav>
+        <div class="p-4 border-t border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-gradient-to-br from-ibm-blue to-ibm-blue-light rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">JD</div>
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold text-slate-700 truncate">John Doe</p>
+                    <p class="text-xs text-slate-400 truncate">Relationship Manager</p>
                 </div>
             </div>
-        </aside>
+        </div>
+    </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
-            <header class="bg-white shadow-sm border-b border-slate-200">
-                <div class="px-8 py-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
-                        <p class="text-sm text-slate-500 mt-1">Welcome back! Here's your referral pipeline overview.</p>
-                    </div>
-                    <button id="newReferralBtn" class="bg-ibm-blue hover:bg-ibm-blue-dark text-white px-6 py-2.5 rounded-lg font-semibold transition-colors shadow-sm">
-                        + New Referral
-                    </button>
+    <!-- MAIN -->
+    <main class="flex-1 overflow-y-auto bg-slate-50" id="main-content-area">
+
+        <!-- Desktop header -->
+        <header class="hidden lg:block bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
+            <div class="px-6 xl:px-8 py-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Dashboard</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Welcome back — your referral pipeline at a glance.</p>
                 </div>
-            </header>
+                <button id="desktopNewBtn" class="bg-ibm-blue hover:bg-ibm-blue-dark active:scale-95 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm">+ New Referral</button>
+            </div>
+        </header>
 
-            <!-- Stats Cards -->
-            <div class="px-8 py-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <!-- Card 1 -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Total Referrals</p>
-                                <p class="text-3xl font-bold text-slate-800 mt-2">247</p>
-                            </div>
-                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-ibm-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                </svg>
-                            </div>
+        <div class="px-4 sm:px-6 xl:px-8 py-5 space-y-5">
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div><p class="text-xs font-medium text-slate-400">Total Referrals</p><p class="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">247</p></div>
+                        <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-ibm-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
-                        <p class="text-xs text-green-600 mt-3 font-medium">↑ 12% from last month</p>
                     </div>
-
-                    <!-- Card 2 -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Active Leads</p>
-                                <p class="text-3xl font-bold text-slate-800 mt-2">89</p>
-                            </div>
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                </svg>
-                            </div>
+                    <p class="text-[11px] text-emerald-600 mt-2 font-medium">↑ 12% from last month</p>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div><p class="text-xs font-medium text-slate-400">Active Leads</p><p class="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">89</p></div>
+                        <div class="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                         </div>
-                        <p class="text-xs text-green-600 mt-3 font-medium">↑ 8% from last week</p>
                     </div>
-
-                    <!-- Card 3 -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">Avg. Confidence</p>
-                                <p class="text-3xl font-bold text-slate-800 mt-2">87%</p>
-                            </div>
-                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                                </svg>
-                            </div>
+                    <p class="text-[11px] text-emerald-600 mt-2 font-medium">↑ 8% from last week</p>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div><p class="text-xs font-medium text-slate-400">Avg. Confidence</p><p class="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">87%</p></div>
+                        <div class="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                         </div>
-                        <p class="text-xs text-green-600 mt-3 font-medium">↑ 3% improvement</p>
                     </div>
-
-                    <!-- Card 4 -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-500">SFDC Synced</p>
-                                <p class="text-3xl font-bold text-slate-800 mt-2">234</p>
-                            </div>
-                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
+                    <p class="text-[11px] text-emerald-600 mt-2 font-medium">↑ 3% improvement</p>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div><p class="text-xs font-medium text-slate-400">SFDC Synced</p><p class="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">234</p></div>
+                        <div class="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
-                        <p class="text-xs text-slate-500 mt-3 font-medium">94.7% sync rate</p>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2 font-medium">94.7% sync rate</p>
+                </div>
+            </div>
+
+            <!-- Pipeline -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Toolbar -->
+                <div class="px-4 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-base font-bold text-slate-800">Referral Pipeline</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Recent leads with AI analysis</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1 sm:flex-none">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input type="text" id="searchInput" placeholder="Search referrals..."
+                                   class="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent w-full sm:w-52 bg-slate-50">
+                        </div>
+                        <button class="px-3 py-2 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5 flex-shrink-0">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+                            Filter
+                        </button>
                     </div>
                 </div>
 
-                <!-- Referral Pipeline Table -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-                    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800">Referral Pipeline</h3>
-                            <p class="text-sm text-slate-500 mt-1">Recent referral leads with AI analysis</p>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <input type="text" placeholder="Search referrals..." class="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent">
-                            <button class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                                Filter
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-slate-50 border-b border-slate-200">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Customer Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Product Type</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">AI Confidence Score</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">AI Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">SFDC Sync Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="referralTableBody" class="divide-y divide-slate-200">
-                                <!-- Row 1 -->
-                                <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                AC
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-slate-800">Acme Corporation</p>
-                                                <p class="text-xs text-slate-500">acme@example.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            Commercial
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-between text-xs">
-                                                <span class="font-semibold text-slate-700">92%</span>
-                                                <span class="text-slate-500">High</span>
-                                            </div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill confidence-high" style="width: 92%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="ai-status-badge ai-status-fallback">
-                                            ⚠ Fallback
-                                            <span class="info-icon" data-tooltip="Timeout">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="status-badge status-synced">
-                                            ✓ Synced
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                                    </td>
-                                </tr>
+                <!-- Desktop table -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="px-5 py-3 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Customer</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Type</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Confidence</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">AI Status</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">SFDC Sync</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="referralTableBody" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
 
-                                <!-- Row 2 -->
-                                <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                TI
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-slate-800">TechInnovate Ltd</p>
-                                                <p class="text-xs text-slate-500">contact@techinnovate.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Retail
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-between text-xs">
-                                                <span class="font-semibold text-slate-700">78%</span>
-                                                <span class="text-slate-500">Medium</span>
-                                            </div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill confidence-medium" style="width: 78%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="ai-status-badge ai-status-success">
-                                            ✓ Success
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="status-badge status-synced">
-                                            ✓ Synced
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                                    </td>
-                                </tr>
+                <!-- Mobile card list -->
+                <div id="referralCardList" class="md:hidden divide-y divide-slate-100"></div>
 
-                                <!-- Row 3 -->
-                                <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                GS
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-slate-800">Global Solutions Inc</p>
-                                                <p class="text-xs text-slate-500">info@globalsolutions.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            Commercial
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-between text-xs">
-                                                <span class="font-semibold text-slate-700">95%</span>
-                                                <span class="text-slate-500">High</span>
-                                            </div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill confidence-high" style="width: 95%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="ai-status-badge ai-status-success">
-                                            ✓ Success
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="status-badge status-pending">
-                                            ⏳ Pending
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                                    </td>
-                                </tr>
-
-                                <!-- Row 4 -->
-                                <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                ME
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-slate-800">Metro Enterprises</p>
-                                                <p class="text-xs text-slate-500">hello@metro.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Retail
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-between text-xs">
-                                                <span class="font-semibold text-slate-700">65%</span>
-                                                <span class="text-slate-500">Medium</span>
-                                            </div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill confidence-medium" style="width: 65%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="ai-status-badge ai-status-success">
-                                            ✓ Success
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="status-badge status-synced">
-                                            ✓ Synced
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                                    </td>
-                                </tr>
-
-                                <!-- Row 5 -->
-                                <tr class="fallback-row transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                SF
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-slate-800">Summit Financial</p>
-                                                <p class="text-xs text-slate-500">contact@summitfin.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            Commercial
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-between text-xs">
-                                                <span class="font-semibold text-slate-700">88%</span>
-                                                <span class="text-slate-500">High</span>
-                                            </div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill confidence-high" style="width: 88%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="ai-status-badge ai-status-fallback">
-                                            ⚠ Fallback
-                                            <span class="info-icon" data-tooltip="API Error">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="status-badge status-error">
-                                            ✗ Error
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                                    </td>
-                                </tr>
-
-                                <!-- Row 6 -->
-                                <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                NV
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-slate-800">Nova Ventures</p>
-                                                <p class="text-xs text-slate-500">team@novaventures.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Retail
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-between text-xs">
-                                                <span class="font-semibold text-slate-700">82%</span>
-                                                <span class="text-slate-500">High</span>
-                                            </div>
-                                            <div class="confidence-bar">
-                                                <div class="confidence-fill confidence-high" style="width: 82%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="ai-status-badge ai-status-success">
-                                            ✓ Success
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="status-badge status-synced">
-                                            ✓ Synced
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-                        <p class="text-sm text-slate-600">Showing <span class="font-semibold">1-6</span> of <span class="font-semibold">89</span> referrals</p>
-                        <div class="flex items-center space-x-2">
-                            <button class="px-3 py-1 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">Previous</button>
-                            <button class="px-3 py-1 bg-ibm-blue text-white rounded text-sm font-medium">1</button>
-                            <button class="px-3 py-1 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">2</button>
-                            <button class="px-3 py-1 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">3</button>
-                            <button class="px-3 py-1 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">Next</button>
-                        </div>
+                <!-- Pagination -->
+                <div class="px-4 sm:px-6 py-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center gap-3 bg-slate-50/50">
+                    <p class="text-xs text-slate-500 flex-1">Showing <span class="font-semibold">1–6</span> of <span class="font-semibold">89</span> referrals</p>
+                    <div class="flex items-center gap-1.5">
+                        <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">← Prev</button>
+                        <button class="px-2.5 py-1.5 bg-ibm-blue text-white rounded-md text-xs font-semibold">1</button>
+                        <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">2</button>
+                        <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">3</button>
+                        <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">Next →</button>
                     </div>
                 </div>
             </div>
 
             <!-- Footer -->
-            <footer class="bg-white border-t border-slate-200 mt-8">
-                <div class="px-8 py-4 flex items-center justify-between">
-                    <p class="text-sm text-slate-600">
-                        <span class="font-semibold">Powered by Reflip</span> | An IBM Ecosystem Solution
-                    </p>
-                    <div class="flex items-center space-x-4 text-sm text-slate-500">
-                        <a href="#" class="hover:text-ibm-blue transition-colors">Privacy Policy</a>
-                        <span>•</span>
-                        <a href="#" class="hover:text-ibm-blue transition-colors">Terms of Service</a>
-                        <span>•</span>
-                        <a href="#" class="hover:text-ibm-blue transition-colors">Support</a>
+            <footer class="pb-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400">
+                    <p><span class="font-semibold text-slate-500">Reflip</span> · An IBM Ecosystem Solution</p>
+                    <div class="flex items-center gap-3">
+                        <a href="#" class="hover:text-ibm-blue transition-colors">Privacy</a>
+                        <span>·</span><a href="#" class="hover:text-ibm-blue transition-colors">Terms</a>
+                        <span>·</span><a href="#" class="hover:text-ibm-blue transition-colors">Support</a>
                     </div>
                 </div>
             </footer>
-        </main>
-    </div>
-
-    <!-- New Referral Modal -->
-    <div id="newReferralModal" class="modal">
-        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <!-- Modal Header -->
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
-                <div>
-                    <h3 class="text-xl font-bold text-slate-800">Create New Referral</h3>
-                    <p class="text-sm text-slate-500 mt-1">Enter customer transcript for AI analysis</p>
-                </div>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <form id="referralForm" class="p-6 space-y-6">
-                <!-- Customer Name -->
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Customer Name *</label>
-                    <input type="text" id="customerName" required
-                           class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent"
-                           placeholder="e.g., Acme Corporation">
-                </div>
-
-                <!-- Customer Email -->
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Customer Email</label>
-                    <input type="email" id="customerEmail"
-                           class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent"
-                           placeholder="e.g., contact@acme.com">
-                </div>
-
-                <!-- Product Type -->
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Product Type *</label>
-                    <select id="productType" required
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent">
-                        <option value="">Select product type...</option>
-                        <option value="Commercial">Commercial Banking</option>
-                        <option value="Retail">Retail Banking</option>
-                    </select>
-                </div>
-
-                <!-- Customer Transcript -->
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Customer Transcript *</label>
-                    <textarea id="customerTranscript" required rows="6"
-                              class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent resize-none"
-                              placeholder="Enter the customer conversation transcript here. Include details about their needs, concerns, and any specific requirements discussed..."></textarea>
-                    <p class="text-xs text-slate-500 mt-2">This transcript will be analyzed by Watsonx.ai to generate insights and recommendations.</p>
-                </div>
-
-                <!-- Urgency Level -->
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Urgency Level</label>
-                    <select id="urgencyLevel"
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent">
-                        <option value="routine">Routine</option>
-                        <option value="urgent">Urgent</option>
-                        <option value="emergency">Emergency</option>
-                    </select>
-                </div>
-
-                <!-- Loading State -->
-                <div id="loadingState" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="spinner"></div>
-                        <div>
-                            <p class="text-sm font-semibold text-blue-900">Processing with Watsonx.ai...</p>
-                            <p class="text-xs text-blue-700 mt-1">Analyzing transcript and generating AI insights</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Error State -->
-                <div id="errorState" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
-                    <div class="flex items-start space-x-3">
-                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-red-900">Error Creating Referral</p>
-                            <p id="errorMessage" class="text-xs text-red-700 mt-1"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200">
-                    <button type="button" id="cancelBtn"
-                            class="px-6 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit" id="submitBtn"
-                            class="px-6 py-2.5 bg-ibm-blue hover:bg-ibm-blue-dark text-white rounded-lg text-sm font-semibold transition-colors shadow-sm">
-                        Create Referral
-                    </button>
-                </div>
-            </form>
         </div>
+    </main>
+</div>
+
+<!-- Bottom nav (mobile) -->
+<nav id="bottom-nav" class="items-center justify-around py-2">
+    <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-ibm-blue" data-section="dashboard">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span class="text-[10px] font-semibold">Home</span>
+    </button>
+    <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-slate-400" data-section="referrals">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <span class="text-[10px] font-semibold">Leads</span>
+    </button>
+    <button id="bottomNewBtn" class="flex flex-col items-center gap-1 px-4 py-1">
+        <div class="w-10 h-10 bg-ibm-blue rounded-full flex items-center justify-center shadow-md -mt-5 border-4 border-slate-50">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        </div>
+        <span class="text-[10px] font-semibold text-ibm-blue">New</span>
+    </button>
+    <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-slate-400" data-section="insights">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        <span class="text-[10px] font-semibold">Insights</span>
+    </button>
+    <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-slate-400" data-section="profile">
+        <div class="w-5 h-5 bg-ibm-blue rounded-full flex items-center justify-center text-white text-[8px] font-bold">JD</div>
+        <span class="text-[10px] font-semibold">Me</span>
+    </button>
+</nav>
+
+<!-- Modal -->
+<div id="newReferralModal" class="modal">
+    <div class="modal-content bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl sm:max-w-lg sm:mx-4 max-h-[92vh] sm:max-h-[88vh] overflow-y-auto">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-2xl">
+            <div>
+                <h3 class="text-base font-bold text-slate-800">Create New Referral</h3>
+                <p class="text-xs text-slate-400 mt-0.5">AI-powered analysis via Watsonx</p>
+            </div>
+            <button id="closeModalBtn" class="p-2 -mr-1 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form id="referralForm" class="p-5 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Customer Name <span class="text-red-400">*</span></label>
+                <input type="text" id="customerName" required autocomplete="off"
+                       class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50"
+                       placeholder="e.g., Acme Corporation">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Customer Email</label>
+                <input type="email" id="customerEmail" autocomplete="off"
+                       class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50"
+                       placeholder="e.g., contact@acme.com">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Product Type <span class="text-red-400">*</span></label>
+                <select id="productType" required
+                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50 appearance-none">
+                    <option value="">Select product type...</option>
+                    <option value="Commercial">Commercial Banking</option>
+                    <option value="Retail">Retail Banking</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Customer Transcript <span class="text-red-400">*</span></label>
+                <textarea id="customerTranscript" required rows="5"
+                          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue resize-none bg-slate-50"
+                          placeholder="Paste the customer conversation transcript here..."></textarea>
+                <p class="text-[10px] text-slate-400 mt-1">Analyzed by Watsonx.ai to generate insights & recommendations.</p>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Urgency Level</label>
+                <select id="urgencyLevel"
+                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50 appearance-none">
+                    <option value="routine">Routine</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="emergency">Emergency</option>
+                </select>
+            </div>
+            <div id="loadingState" class="hidden bg-blue-50 border border-blue-100 rounded-lg p-3.5">
+                <div class="flex items-center gap-3">
+                    <div class="spinner flex-shrink-0"></div>
+                    <div>
+                        <p class="text-xs font-semibold text-blue-900">Processing with Watsonx.ai...</p>
+                        <p class="text-[10px] text-blue-600 mt-0.5">Analyzing transcript and generating insights</p>
+                    </div>
+                </div>
+            </div>
+            <div id="errorState" class="hidden bg-red-50 border border-red-100 rounded-lg p-3.5">
+                <div class="flex items-start gap-2.5">
+                    <svg class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div>
+                        <p class="text-xs font-semibold text-red-800">Error Creating Referral</p>
+                        <p id="errorMessage" class="text-[10px] text-red-600 mt-0.5"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2.5 pt-2 border-t border-slate-100">
+                <button type="button" id="cancelBtn" class="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+                <button type="submit" id="submitBtn" class="flex-1 px-4 py-2.5 bg-ibm-blue hover:bg-ibm-blue-dark active:scale-95 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">Create Referral</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
-        // Modal Management
-        const modal = document.getElementById('newReferralModal');
-        const newReferralBtn = document.getElementById('newReferralBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const referralForm = document.getElementById('referralForm');
-        const loadingState = document.getElementById('loadingState');
-        const errorState = document.getElementById('errorState');
-        const submitBtn = document.getElementById('submitBtn');
+<script>
+// Sidebar
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+document.getElementById('hamburgerBtn')?.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); document.body.style.overflow='hidden'; });
+overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow=''; });
+document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => { if(window.innerWidth<1024){ sidebar.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow=''; } }));
 
-        // Open modal
-        newReferralBtn.addEventListener('click', () => {
-            modal.classList.add('active');
-            referralForm.reset();
-            loadingState.classList.add('hidden');
-            errorState.classList.add('hidden');
+// Active nav
+function setActive(s) {
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section===s));
+    document.querySelectorAll('.bottom-nav-btn').forEach(b => { b.classList.toggle('text-ibm-blue', b.dataset.section===s); b.classList.toggle('text-slate-400', b.dataset.section!==s); });
+}
+document.querySelectorAll('.nav-link, .bottom-nav-btn').forEach(el => el.addEventListener('click', () => setActive(el.dataset.section)));
+
+// Modal
+const modal = document.getElementById('newReferralModal');
+const form  = document.getElementById('referralForm');
+function openModal()  { modal.classList.add('active'); form.reset(); document.getElementById('loadingState').classList.add('hidden'); document.getElementById('errorState').classList.add('hidden'); document.body.style.overflow='hidden'; }
+function closeModal() { modal.classList.remove('active'); document.body.style.overflow=''; }
+['desktopNewBtn','mobileNewBtn','bottomNewBtn'].forEach(id => document.getElementById(id)?.addEventListener('click', openModal));
+document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if(e.target===modal) closeModal(); });
+
+// Form submit
+form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loadingState');
+    const errorDiv = document.getElementById('errorState');
+    loading.classList.remove('hidden'); errorDiv.classList.add('hidden');
+    submitBtn.disabled = true; submitBtn.classList.add('opacity-50','cursor-not-allowed');
+    try {
+        const res = await fetch('/api/salesforce/referrals', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ Patient_Name__c: document.getElementById('customerName').value, Condition__c: document.getElementById('customerTranscript').value, Urgency__c: document.getElementById('urgencyLevel').value, Specialty__c: document.getElementById('productType').value, Email__c: document.getElementById('customerEmail').value })
         });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        closeModal(); await loadReferrals(); showNotification('Referral created successfully! ✓', 'success');
+    } catch(err) {
+        errorDiv.classList.remove('hidden'); document.getElementById('errorMessage').textContent = err.message || 'Failed. Please try again.';
+    } finally {
+        loading.classList.add('hidden'); submitBtn.disabled=false; submitBtn.classList.remove('opacity-50','cursor-not-allowed');
+    }
+});
 
-        // Close modal
-        const closeModal = () => {
-            modal.classList.remove('active');
-        };
+// Data helpers
+const defaultReferrals = [
+    { Patient_Name__c:'Acme Corporation',    Email__c:'acme@example.com',           Specialty__c:'Commercial', AI_Priority_Level__c:92, AI_Status__c:'Fallback',  AI_Fallback_Reason__c:'Timeout'    },
+    { Patient_Name__c:'TechInnovate Ltd',    Email__c:'contact@techinnovate.com',   Specialty__c:'Retail',     AI_Priority_Level__c:78, AI_Status__c:'Success'                                        },
+    { Patient_Name__c:'Global Solutions Inc',Email__c:'info@globalsolutions.com',   Specialty__c:'Commercial', AI_Priority_Level__c:95, AI_Status__c:'Success',  Status__c:'Pending'                 },
+    { Patient_Name__c:'Metro Enterprises',   Email__c:'hello@metro.com',            Specialty__c:'Retail',     AI_Priority_Level__c:65, AI_Status__c:'Success'                                        },
+    { Patient_Name__c:'Summit Financial',    Email__c:'contact@summitfin.com',      Specialty__c:'Commercial', AI_Priority_Level__c:88, AI_Status__c:'Fallback',  AI_Fallback_Reason__c:'API Error'  },
+    { Patient_Name__c:'Nova Ventures',       Email__c:'team@novaventures.com',      Specialty__c:'Retail',     AI_Priority_Level__c:82, AI_Status__c:'Success'                                        },
+];
+const avatarColors = ['from-blue-400 to-blue-600','from-purple-400 to-purple-600','from-emerald-400 to-emerald-600','from-orange-400 to-orange-600','from-red-400 to-red-600','from-indigo-400 to-indigo-600'];
+function initials(n) { if(!n) return '??'; const p=n.trim().split(' '); return p.length===1?p[0].substring(0,2).toUpperCase():(p[0][0]+p[p.length-1][0]).toUpperCase(); }
+function data(ref, i) {
+    const c = ref.AI_Priority_Level__c || 80;
+    const cf = c>=80?'high':c>=60?'medium':'low', cl = c>=80?'High':c>=60?'Medium':'Low';
+    const lob = ref.LineOfBusiness__c||ref.Specialty__c||'Retail';
+    const sync = ref.Status__c==='Pending'?'pending':'synced';
+    const fb = (ref.AI_Status__c||'')==='Fallback';
+    return { c, cf, cl, lob, sync, fb, fr: ref.AI_Fallback_Reason__c||'', init: initials(ref.Patient_Name__c||ref.Name), name: ref.Patient_Name__c||ref.Name||'Unknown', email: ref.Email__c||'—', ac: avatarColors[i%6] };
+}
+function tableRow(ref, i) {
+    const d = data(ref,i);
+    const lobCls = d.lob==='Commercial'?'bg-blue-50 text-blue-700':'bg-emerald-50 text-emerald-700';
+    const aiBadge = d.fb ? `<span class="ai-status-badge ai-status-fallback">⚠ Fallback<span class="info-icon" data-tooltip="${d.fr}"><svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg></span></span>` : `<span class="ai-status-badge ai-status-success">✓ Success</span>`;
+    return `<tr class="${d.fb?'fallback-row':'hover:bg-slate-50/80'} transition-colors">
+        <td class="px-5 py-3.5"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-gradient-to-br ${d.ac} rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">${d.init}</div><div class="min-w-0"><p class="text-sm font-semibold text-slate-800 truncate">${d.name}</p><p class="text-xs text-slate-400 truncate">${d.email}</p></div></div></td>
+        <td class="px-5 py-3.5"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${lobCls}">${d.lob}</span></td>
+        <td class="px-5 py-3.5 w-36"><div class="space-y-1.5"><div class="flex justify-between text-xs"><span class="font-semibold text-slate-700">${d.c}%</span><span class="text-slate-400">${d.cl}</span></div><div class="confidence-bar"><div class="confidence-fill confidence-${d.cf}" style="width:${d.c}%"></div></div></div></td>
+        <td class="px-5 py-3.5">${aiBadge}</td>
+        <td class="px-5 py-3.5"><span class="status-badge status-${d.sync}">${d.sync==='synced'?'✓ Synced':'⏳ Pending'}</span></td>
+        <td class="px-5 py-3.5"><button class="text-ibm-blue hover:text-ibm-blue-dark font-semibold text-xs">View →</button></td>
+    </tr>`;
+}
+function mobileCard(ref, i) {
+    const d = data(ref,i);
+    const lobCls = d.lob==='Commercial'?'bg-blue-50 text-blue-700':'bg-emerald-50 text-emerald-700';
+    const aiBadge = d.fb ? `<span class="ai-status-badge ai-status-fallback">⚠ Fallback</span>` : `<span class="ai-status-badge ai-status-success">✓ Success</span>`;
+    return `<div class="p-4 mx-4 my-2 referral-card ${d.fb?'fallback-card':''}">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-gradient-to-br ${d.ac} rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">${d.init}</div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-slate-800 truncate">${d.name}</p><p class="text-xs text-slate-400 truncate">${d.email}</p></div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${lobCls} flex-shrink-0">${d.lob}</span>
+        </div>
+        <div class="space-y-1.5 mb-3">
+            <div class="flex justify-between text-xs"><span class="text-slate-500">Confidence</span><span class="font-semibold text-slate-700">${d.c}% · ${d.cl}</span></div>
+            <div class="confidence-bar"><div class="confidence-fill confidence-${d.cf}" style="width:${d.c}%"></div></div>
+        </div>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">${aiBadge}<span class="status-badge status-${d.sync}">${d.sync==='synced'?'✓ Synced':'⏳ Pending'}</span></div>
+            <button class="text-ibm-blue font-semibold text-xs">View →</button>
+        </div>
+    </div>`;
+}
 
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-        
-        // Close on backdrop click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
+function renderReferrals(list) {
+    const tbody = document.getElementById('referralTableBody');
+    const cards = document.getElementById('referralCardList');
+    if(!list.length) {
+        if(tbody) tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-slate-400 text-sm">No referrals found.</td></tr>`;
+        if(cards) cards.innerHTML = `<div class="py-12 text-center text-slate-400 text-sm">No referrals found.</div>`;
+        return;
+    }
+    if(tbody) tbody.innerHTML = list.map(tableRow).join('');
+    if(cards) cards.innerHTML = list.map(mobileCard).join('');
+    initTooltips();
+}
+
+async function loadReferrals() {
+    try {
+        const res = await fetch('/api/salesforce/referrals');
+        if(!res.ok) throw new Error();
+        const d = await res.json();
+        renderReferrals(d.referrals?.length ? d.referrals : defaultReferrals);
+    } catch { renderReferrals(defaultReferrals); }
+}
+
+// Tooltips
+let tip = null;
+function initTooltips() {
+    document.querySelectorAll('.info-icon').forEach(icon => {
+        icon.addEventListener('mouseenter', e => {
+            const txt = e.currentTarget.dataset.tooltip; if(!txt) return;
+            tip = document.createElement('div'); tip.className='tooltip'; tip.textContent=txt; document.body.appendChild(tip);
+            const r=e.currentTarget.getBoundingClientRect(), tr=tip.getBoundingClientRect();
+            tip.style.left=`${r.left+r.width/2-tr.width/2}px`; tip.style.top=`${r.top-tr.height-6}px`;
+            setTimeout(()=>tip?.classList.add('show'),10);
         });
+        icon.addEventListener('mouseleave', () => { tip?.classList.remove('show'); setTimeout(()=>{tip?.remove();tip=null;},200); });
+    });
+}
 
-        // Handle form submission
-        referralForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Get form values
-            const customerName = document.getElementById('customerName').value;
-            const customerEmail = document.getElementById('customerEmail').value;
-            const productType = document.getElementById('productType').value;
-            const transcript = document.getElementById('customerTranscript').value;
-            const urgency = document.getElementById('urgencyLevel').value;
+// Search
+document.getElementById('searchInput')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#referralTableBody tr').forEach(r => r.style.display = r.textContent.toLowerCase().includes(q)?'':'none');
+    document.querySelectorAll('#referralCardList .referral-card').forEach(c => c.style.display = c.textContent.toLowerCase().includes(q)?'':'none');
+});
 
-            // Show loading state
-            loadingState.classList.remove('hidden');
-            errorState.classList.add('hidden');
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+// Notification
+function showNotification(msg, type='success') {
+    const n = document.createElement('div');
+    n.className = `notification ${type==='success'?'bg-emerald-500':'bg-red-500'} text-white`;
+    n.textContent = msg; document.body.appendChild(n);
+    setTimeout(() => { n.style.opacity='0'; n.style.transition='opacity .3s'; setTimeout(()=>n.remove(),300); }, 3000);
+}
 
-            try {
-                // Prepare referral data
-                const referralData = {
-                    Patient_Name__c: customerName,
-                    Condition__c: transcript,
-                    Urgency__c: urgency,
-                    Specialty__c: productType,
-                    Email__c: customerEmail
-                };
-
-                // POST to API
-                const response = await fetch('/api/salesforce/referrals', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(referralData)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                // Success! Close modal and refresh table
-                closeModal();
-                await loadReferrals();
-                
-                // Show success notification (optional)
-                showNotification('Referral created successfully!', 'success');
-
-            } catch (error) {
-                console.error('Error creating referral:', error);
-                errorState.classList.remove('hidden');
-                document.getElementById('errorMessage').textContent = error.message || 'Failed to create referral. Please try again.';
-            } finally {
-                loadingState.classList.add('hidden');
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        });
-
-        // Load referrals from API
-        async function loadReferrals() {
-            try {
-                const response = await fetch('/api/salesforce/referrals');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch referrals');
-                }
-                
-                const data = await response.json();
-                const referrals = data.referrals || [];
-                
-                renderReferrals(referrals);
-            } catch (error) {
-                console.error('Error loading referrals:', error);
-                // Keep existing table data on error
-            }
-        }
-
-        // Render referrals in table
-        function renderReferrals(referrals) {
-            const tbody = document.getElementById('referralTableBody');
-            
-            if (referrals.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-slate-500">
-                            No referrals found. Create your first referral to get started!
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = referrals.map(referral => {
-                const initials = getInitials(referral.Patient_Name__c || referral.Name);
-                const confidence = referral.AI_Priority_Level__c || Math.floor(Math.random() * 30) + 70;
-                const confidenceClass = confidence >= 80 ? 'confidence-high' : confidence >= 60 ? 'confidence-medium' : 'confidence-low';
-                const confidenceLabel = confidence >= 80 ? 'High' : confidence >= 60 ? 'Medium' : 'Low';
-                
-                // Use LineOfBusiness from AI analysis, fallback to Specialty__c
-                const lineOfBusiness = referral.LineOfBusiness__c || referral.Specialty__c || 'Retail';
-                const isCommercial = lineOfBusiness === 'Commercial';
-                
-                const syncStatus = referral.Status__c === 'Pending' ? 'pending' : 'synced';
-                const email = referral.Email__c || 'N/A';
-
-                // Check for AI fallback status
-                const aiStatus = referral.AI_Status__c || 'Success';
-                const fallbackReason = referral.AI_Fallback_Reason__c || '';
-                const isFallback = aiStatus === 'Fallback';
-                const rowClass = isFallback ? 'fallback-row transition-colors' : 'hover:bg-slate-50 transition-colors';
-
-                // AI Status badge HTML
-                const aiStatusBadge = isFallback ? `
-                    <span class="ai-status-badge ai-status-fallback">
-                        ⚠ Fallback
-                        <span class="info-icon" data-tooltip="${fallbackReason}">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                            </svg>
-                        </span>
-                    </span>
-                ` : `
-                    <span class="ai-status-badge ai-status-success">
-                        ✓ Success
-                    </span>
-                `;
-
-                return `
-                    <tr class="${rowClass}">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                    ${initials}
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-semibold text-slate-800">${referral.Patient_Name__c || referral.Name}</p>
-                                    <p class="text-xs text-slate-500">${email}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isCommercial ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
-                                ${lineOfBusiness}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-semibold text-slate-700">${confidence}%</span>
-                                    <span class="text-slate-500">${confidenceLabel}</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill ${confidenceClass}" style="width: ${confidence}%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            ${aiStatusBadge}
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="status-badge status-${syncStatus}">
-                                ${syncStatus === 'synced' ? '✓ Synced' : '⏳ Pending'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <button class="text-ibm-blue hover:text-ibm-blue-dark font-medium text-sm">View Details</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            // Initialize tooltips after rendering
-            initializeTooltips();
-        }
-
-        // Helper function to get initials
-        function getInitials(name) {
-            if (!name) return '??';
-            const parts = name.trim().split(' ');
-            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-        }
-
-        // Show notification (simple implementation)
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white font-semibold z-50`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Add active state to sidebar links
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-        // Tooltip functionality
-        let currentTooltip = null;
-
-        function initializeTooltips() {
-            // Remove existing tooltip if any
-            if (currentTooltip) {
-                currentTooltip.remove();
-                currentTooltip = null;
-            }
-
-            // Add event listeners to all info icons
-            document.querySelectorAll('.info-icon').forEach(icon => {
-                icon.addEventListener('mouseenter', showTooltip);
-                icon.addEventListener('mouseleave', hideTooltip);
-            });
-        }
-
-        function showTooltip(event) {
-            const icon = event.currentTarget;
-            const tooltipText = icon.getAttribute('data-tooltip');
-            
-            if (!tooltipText) return;
-
-            // Create tooltip element
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
-            tooltip.textContent = tooltipText;
-            document.body.appendChild(tooltip);
-
-            // Position tooltip
-            const iconRect = icon.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            
-            tooltip.style.left = `${iconRect.left + iconRect.width / 2 - tooltipRect.width / 2}px`;
-            tooltip.style.top = `${iconRect.top - tooltipRect.height - 8}px`;
-
-            // Show tooltip with animation
-            setTimeout(() => tooltip.classList.add('show'), 10);
-            
-            currentTooltip = tooltip;
-        }
-
-        function hideTooltip() {
-            if (currentTooltip) {
-                currentTooltip.classList.remove('show');
-                setTimeout(() => {
-                    if (currentTooltip) {
-                        currentTooltip.remove();
-                        currentTooltip = null;
-                    }
-                }, 200);
-            }
-        }
-
-
-        // Load referrals on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadReferrals();
-            initializeTooltips();
-        });
-
-        // Auto-refresh referrals every 30 seconds
-        setInterval(() => {
-            loadReferrals();
-        }, 30000);
-    </script>
+document.addEventListener('DOMContentLoaded', () => { loadReferrals(); setInterval(loadReferrals,30000); });
+</script>
 </body>
 </html>
