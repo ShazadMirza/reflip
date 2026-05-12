@@ -1,0 +1,49 @@
+{
+  "scenarios": [
+    {
+      "name": "High-Value Commercial Lead",
+      "description": "Commercial banking client with EBITDA and payroll mentions - should get blue Commercial badge",
+      "payload": {
+        "text": "Hello, I'm the CFO of TechStart Solutions Inc. We're looking to expand our operations in Toronto and need commercial banking services. Our current EBITDA is around $2.5M annually, and we're managing payroll for 45 employees. We need a business loan to finance new equipment and would like to discuss merchant services and a corporate credit card. Can someone from your commercial banking team reach out to us this week?"
+      },
+      "expectedIntent": {
+        "LineOfBusiness": "Commercial",
+        "Banking_Product": "Business Loan",
+        "Small_Business_Flag": false,
+        "Priority_Level": "Standard",
+        "Ontario_Region": "Toronto",
+        "Urgency_Score": 7
+      }
+    },
+    {
+      "name": "Standard Retail Lead",
+      "description": "Personal banking client with TFSA mention - should get green Retail badge",
+      "payload": {
+        "text": "Hi there! I'm interested in opening a TFSA account for my retirement savings. I currently have a personal chequing account with another bank, but I'm looking to consolidate my finances. I'd also like to learn about your GIC rates and RRSP options. I live in Ottawa and would prefer to visit a branch near me. No rush, but I'd like to get this set up within the next month or so."
+      },
+      "expectedIntent": {
+        "LineOfBusiness": "Retail",
+        "Banking_Product": "TFSA",
+        "Small_Business_Flag": false,
+        "Priority_Level": "Standard",
+        "Ontario_Region": "Ottawa",
+        "Urgency_Score": 5
+      }
+    },
+    {
+      "name": "Small Business Startup",
+      "description": "New business startup - should get blue Commercial badge with High Priority",
+      "payload": {
+        "text": "Good morning! I'm starting a new company in Mississauga - a small consulting firm. I need help setting up a business account and would like to apply for a small business loan to cover initial operating costs. This is my first time starting a business, so I'm looking for guidance on business banking products, payroll services, and maybe a business credit card. I'm hoping to launch next month, so I'd appreciate if we could connect soon. Thank you!"
+      },
+      "expectedIntent": {
+        "LineOfBusiness": "Commercial",
+        "Banking_Product": "Business Loan",
+        "Small_Business_Flag": true,
+        "Priority_Level": "High Priority",
+        "Ontario_Region": "Mississauga",
+        "Urgency_Score": 9
+      }
+    }
+  ]
+}
