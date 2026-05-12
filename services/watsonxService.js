@@ -2,7 +2,7 @@ require('dotenv').config();
 
 /**
  * Watsonx Service
- * Handles all IBM Watson AI interactions for referral processing
+ * Handles all AI interactions for referral processing
  * Note: This service is deprecated in favor of the new Referee agent in core/referee.js
  */
 class WatsonxService {
