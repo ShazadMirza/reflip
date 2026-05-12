@@ -265,3 +265,71 @@ For issues and questions:
 ---
 
 **Built with ❤️ using Node.js, IBM Watsonx, and Salesforce**
+
+---
+
+## ☁️ Vercel Deployment
+
+The application is deployed on Vercel at **[reflip-sable.vercel.app](https://reflip-sable.vercel.app)** as a serverless Node.js application.
+
+### Architecture
+
+Vercel runs the Express app as a single serverless function via `api/index.js`, which exports the Express app from `server.js`. All routes (API and frontend) are proxied through this single function.
+
+```
+api/index.js  →  requires ../server.js  →  module.exports = app
+```
+
+### Key Configuration Files
+
+**`vercel.json`** — Defines the build and routing:
+```json
+{
+  "version": 2,
+  "builds": [{ "src": "api/index.js", "use": "@vercel/node" }],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/(.*)", "dest": "/api/index.js" }
+  ],
+  "env": { "NODE_ENV": "production" }
+}
+```
+
+**`api/index.js`** — Serverless entry point:
+```js
+const app = require('../server');
+module.exports = app;
+```
+
+**`server.js`** — The Express app guards `app.listen()` so it only runs in local development, not on Vercel:
+```js
+if (require.main === module) {
+  app.listen(PORT, () => { ... });
+}
+module.exports = app;
+```
+
+### Environment Variables
+
+Set the following in the Vercel dashboard under **Project Settings → Environment Variables**:
+
+| Variable | Description |
+|---|---|
+| `IBM_WATSON_API_KEY` | IBM Cloud Watson API key |
+| `IBM_WATSON_URL` | Watson service URL |
+| `IBM_WATSON_ASSISTANT_ID` | Watson Assistant ID |
+| `SALESFORCE_CLIENT_ID` | Salesforce Connected App client ID |
+| `SALESFORCE_CLIENT_SECRET` | Salesforce Connected App client secret |
+| `SALESFORCE_USERNAME` | Salesforce username |
+| `SALESFORCE_PASSWORD` | Salesforce password |
+| `SALESFORCE_SECURITY_TOKEN` | Salesforce security token |
+| `SALESFORCE_LOGIN_URL` | Salesforce login URL |
+| `ENABLE_CORS` | Set to `true` to allow all origins |
+
+### Deployment Notes
+
+- Vercel auto-deploys on every push to the `main` branch
+- - Do **not** use `builds` + `rewrites` together — use either `builds`+`routes` (legacy) or `rewrites` alone (modern), not both
+  - - The `app.listen()` call must be guarded with `if (require.main === module)` — calling `listen()` unconditionally will cause Vercel
+    -
+   
