@@ -1,7 +1,7 @@
 {
   "name": "referralflow-reflip",
   "version": "1.0.0",
-  "description": "ReferralFlow Reflip - Intelligent referral management integrating IBM Watsonx AI with Salesforce",
+  "description": "Reflip - Intelligent referral management powered by AI and Salesforce",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -15,7 +15,7 @@
     "salesforce",
     "referral",
     "ai",
-    "ibm-cloud",
+    "cloud-ai",
     "reflip"
   ],
   "author": "",
