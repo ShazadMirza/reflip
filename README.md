@@ -1,10 +1,10 @@
 # ReferralFlow Reflip
 
-A Node.js application that integrates IBM Watsonx AI with Salesforce for intelligent referral management and processing.
+A Node.js application that integrates AI with Salesforce for intelligent referral management and processing.
 
 ## 🚀 Features
 
-- **AI-Powered Referral Analysis**: Leverage IBM Watsonx to analyze and route referrals intelligently
+- **AI-Powered Referral Analysis**: Leverage AI engine to analyze and route referrals intelligently
 - **Salesforce Integration**: Seamless CRUD operations with Salesforce referral records
 - **Automated Routing**: AI-driven specialist recommendations and priority assessment
 - **RESTful API**: Clean, well-documented API endpoints
@@ -13,7 +13,7 @@ A Node.js application that integrates IBM Watsonx AI with Salesforce for intelli
 ## 📋 Prerequisites
 
 - Node.js 18+ LTS
-- IBM Cloud account with Watson Assistant service
+- AI engine credentials
 - Salesforce account with API access
 - Connected App configured in Salesforce
 
@@ -38,10 +38,10 @@ A Node.js application that integrates IBM Watsonx AI with Salesforce for intelli
    PORT=3000
    NODE_ENV=development
 
-   # IBM Watson Configuration
-   IBM_WATSON_API_KEY=your_api_key
-   IBM_WATSON_URL=your_service_url
-   IBM_WATSON_ASSISTANT_ID=your_assistant_id
+   # AI engine Configuration
+   AI_API_KEY=your_api_key
+   AI_SERVICE_URL=your_service_url
+   AI_ASSISTANT_ID=your_assistant_id
 
    # Salesforce Configuration
    SALESFORCE_CLIENT_ID=your_client_id
@@ -139,7 +139,7 @@ POST /api/salesforce/auth/test
 ```
 ReferralFlow_Reflip/
 ├── services/
-│   ├── watsonxService.js      # IBM Watsonx AI integration
+│   ├── watsonxService.js      # AI integration
 │   └── salesforceService.js   # Salesforce API integration
 ├── routes/
 │   └── salesforceRoutes.js    # API route definitions
@@ -173,10 +173,10 @@ ReferralFlow_Reflip/
      - `AI_Estimated_Wait_Time__c` (Text)
      - `AI_Analysis_Timestamp__c` (DateTime)
 
-### IBM Watson Setup
+### AI engine Setup
 
 1. **Create Watson Assistant Service:**
-   - Go to IBM Cloud Console
+   - Go to AI provider console
    - Create a Watson Assistant instance
    - Note your API Key and Service URL
    - Create an Assistant and note the Assistant ID
@@ -235,7 +235,7 @@ curl -X POST http://localhost:3000/api/salesforce/referrals \
 - Ensure Connected App is properly configured
 
 **Watson API Errors:**
-- Verify IBM Cloud credentials
+- Verify cloud AI platform credentials
 - Check Watson Assistant is deployed
 - Ensure API key has proper permissions
 
@@ -259,12 +259,12 @@ ISC
 
 For issues and questions:
 - Check the troubleshooting section
-- Review IBM Watson documentation
+- Review AI engine documentation
 - Review Salesforce API documentation
 
 ---
 
-**Built with ❤️ using Node.js, IBM Watsonx, and Salesforce**
+**Built with ❤️ using Node.js, AI engine, and Salesforce**
 
 ---
 
@@ -315,9 +315,9 @@ Set the following in the Vercel dashboard under **Project Settings → Environme
 
 | Variable | Description |
 |---|---|
-| `IBM_WATSON_API_KEY` | IBM Cloud Watson API key |
-| `IBM_WATSON_URL` | Watson service URL |
-| `IBM_WATSON_ASSISTANT_ID` | Watson Assistant ID |
+| `AI_API_KEY` | cloud AI platform Watson API key |
+| `AI_SERVICE_URL` | Watson service URL |
+| `AI_ASSISTANT_ID` | Watson Assistant ID |
 | `SALESFORCE_CLIENT_ID` | Salesforce Connected App client ID |
 | `SALESFORCE_CLIENT_SECRET` | Salesforce Connected App client secret |
 | `SALESFORCE_USERNAME` | Salesforce username |
