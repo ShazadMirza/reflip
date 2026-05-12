@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Referee is an intelligent intent-extraction agent that analyzes raw text from bank customer interactions and returns structured JSON data. It uses IBM Watsonx.ai as the primary AI engine with Google Gemini as a fallback, and includes a rule-based extraction system as a last resort.
+The Referee is an intelligent intent-extraction agent that analyzes raw text from bank customer interactions and returns structured JSON data. It uses a primary AI engine with Google Gemini as a fallback, and includes a rule-based extraction system as a last resort.
 
 ## Features
 
@@ -183,7 +183,7 @@ Simple health check for the referee service.
 Add these to your `.env` file:
 
 ```env
-# IBM Watsonx.ai Configuration (Primary)
+# AI engine Configuration (Primary)
 WATSONX_API_KEY=your_watsonx_api_key_here
 WATSONX_PROJECT_ID=your_watsonx_project_id_here
 WATSONX_URL=https://us-south.ml.cloud.ibm.com
@@ -195,7 +195,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 ### Getting API Keys
 
 **Watsonx.ai:**
-1. Sign up at [IBM Cloud](https://cloud.ibm.com/)
+1. Sign up at [cloud AI platform](https://cloud.ibm.com/)
 2. Create a Watsonx.ai instance
 3. Get your API key and Project ID from the credentials page
 
