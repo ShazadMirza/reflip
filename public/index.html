@@ -6,19 +6,19 @@
     <title>Reflip - Intelligent Referral Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'ibm-blue': '#0051A5',
-                        'ibm-blue-dark': '#003d7a',
-                        'ibm-blue-light': '#4589ff',
+                        'reflip-blue': '#0051A5',
+                        'reflip-blue-dark': '#003d7a',
+                        'reflip-blue-light': '#4589ff',
                     },
                     fontFamily: {
-                        sans: ['IBM Plex Sans', 'sans-serif'],
-                        mono: ['IBM Plex Mono', 'monospace'],
+                        sans: ['Inter', 'sans-serif'],
+                        
                     }
                 }
             }
@@ -26,7 +26,7 @@
     </script>
     <style>
         * { -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'IBM Plex Sans', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
 
         /* ─── Sidebar ─────────────────────────────── */
         #sidebar { transition: transform 0.3s ease; }
@@ -117,12 +117,12 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
     <div class="flex items-center gap-2">
-        <div class="w-7 h-7 bg-ibm-blue rounded-md flex items-center justify-center">
+        <div class="w-7 h-7 bg-reflip-blue rounded-md flex items-center justify-center">
             <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
         </div>
-        <span class="font-bold text-ibm-blue text-lg tracking-tight">Reflip</span>
+        <span class="font-bold text-reflip-blue text-lg tracking-tight">Reflip</span>
     </div>
-    <button id="mobileNewBtn" class="bg-ibm-blue text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm active:bg-ibm-blue-dark">+ New</button>
+    <button id="mobileNewBtn" class="bg-reflip-blue text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm active:bg-reflip-blue-dark">+ New</button>
 </header>
 
 <div id="sidebar-overlay"></div>
@@ -132,11 +132,11 @@
     <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0 h-full overflow-y-auto">
         <div class="p-5 border-b border-slate-100 flex items-center gap-3">
-            <div class="w-9 h-9 bg-ibm-blue rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="w-9 h-9 bg-reflip-blue rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-ibm-blue leading-none">Reflip</h1>
+                <h1 class="text-xl font-bold text-reflip-blue leading-none">Reflip</h1>
                 <p class="text-[10px] text-slate-400 mt-0.5 leading-none">Intelligent Referral Mgmt</p>
             </div>
         </div>
@@ -157,7 +157,7 @@
         </nav>
         <div class="p-4 border-t border-slate-100">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-gradient-to-br from-ibm-blue to-ibm-blue-light rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">JD</div>
+                <div class="w-9 h-9 bg-gradient-to-br from-reflip-blue to-reflip-blue-light rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">JD</div>
                 <div class="min-w-0">
                     <p class="text-sm font-semibold text-slate-700 truncate">John Doe</p>
                     <p class="text-xs text-slate-400 truncate">Relationship Manager</p>
@@ -176,7 +176,7 @@
                     <h2 class="text-xl font-bold text-slate-800">Dashboard</h2>
                     <p class="text-xs text-slate-400 mt-0.5">Welcome back — your referral pipeline at a glance.</p>
                 </div>
-                <button id="desktopNewBtn" class="bg-ibm-blue hover:bg-ibm-blue-dark active:scale-95 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm">+ New Referral</button>
+                <button id="desktopNewBtn" class="bg-reflip-blue hover:bg-reflip-blue-dark active:scale-95 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm">+ New Referral</button>
             </div>
         </header>
 
@@ -188,7 +188,7 @@
                     <div class="flex items-start justify-between">
                         <div><p class="text-xs font-medium text-slate-400">Total Referrals</p><p class="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">247</p></div>
                         <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-ibm-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            <svg class="w-5 h-5 text-reflip-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
                     </div>
                     <p class="text-[11px] text-emerald-600 mt-2 font-medium">↑ 12% from last month</p>
@@ -234,7 +234,7 @@
                         <div class="relative flex-1 sm:flex-none">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             <input type="text" id="searchInput" placeholder="Search referrals..."
-                                   class="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-ibm-blue focus:border-transparent w-full sm:w-52 bg-slate-50">
+                                   class="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-reflip-blue focus:border-transparent w-full sm:w-52 bg-slate-50">
                         </div>
                         <button class="px-3 py-2 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5 flex-shrink-0">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
@@ -268,7 +268,7 @@
                     <p class="text-xs text-slate-500 flex-1">Showing <span class="font-semibold">1–6</span> of <span class="font-semibold">89</span> referrals</p>
                     <div class="flex items-center gap-1.5">
                         <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">← Prev</button>
-                        <button class="px-2.5 py-1.5 bg-ibm-blue text-white rounded-md text-xs font-semibold">1</button>
+                        <button class="px-2.5 py-1.5 bg-reflip-blue text-white rounded-md text-xs font-semibold">1</button>
                         <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">2</button>
                         <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">3</button>
                         <button class="px-2.5 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-white transition-colors">Next →</button>
@@ -279,11 +279,11 @@
             <!-- Footer -->
             <footer class="pb-2">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400">
-                    <p><span class="font-semibold text-slate-500">Reflip</span> · An IBM Ecosystem Solution</p>
+                    <p><span class="font-semibold text-slate-500">Reflip</span> · Intelligent Referral Management</p>
                     <div class="flex items-center gap-3">
-                        <a href="#" class="hover:text-ibm-blue transition-colors">Privacy</a>
-                        <span>·</span><a href="#" class="hover:text-ibm-blue transition-colors">Terms</a>
-                        <span>·</span><a href="#" class="hover:text-ibm-blue transition-colors">Support</a>
+                        <a href="#" class="hover:text-reflip-blue transition-colors">Privacy</a>
+                        <span>·</span><a href="#" class="hover:text-reflip-blue transition-colors">Terms</a>
+                        <span>·</span><a href="#" class="hover:text-reflip-blue transition-colors">Support</a>
                     </div>
                 </div>
             </footer>
@@ -293,7 +293,7 @@
 
 <!-- Bottom nav (mobile) -->
 <nav id="bottom-nav" class="items-center justify-around py-2">
-    <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-ibm-blue" data-section="dashboard">
+    <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-reflip-blue" data-section="dashboard">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
         <span class="text-[10px] font-semibold">Home</span>
     </button>
@@ -302,17 +302,17 @@
         <span class="text-[10px] font-semibold">Leads</span>
     </button>
     <button id="bottomNewBtn" class="flex flex-col items-center gap-1 px-4 py-1">
-        <div class="w-10 h-10 bg-ibm-blue rounded-full flex items-center justify-center shadow-md -mt-5 border-4 border-slate-50">
+        <div class="w-10 h-10 bg-reflip-blue rounded-full flex items-center justify-center shadow-md -mt-5 border-4 border-slate-50">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         </div>
-        <span class="text-[10px] font-semibold text-ibm-blue">New</span>
+        <span class="text-[10px] font-semibold text-reflip-blue">New</span>
     </button>
     <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-slate-400" data-section="insights">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
         <span class="text-[10px] font-semibold">Insights</span>
     </button>
     <button class="bottom-nav-btn flex flex-col items-center gap-1 px-4 py-1 text-slate-400" data-section="profile">
-        <div class="w-5 h-5 bg-ibm-blue rounded-full flex items-center justify-center text-white text-[8px] font-bold">JD</div>
+        <div class="w-5 h-5 bg-reflip-blue rounded-full flex items-center justify-center text-white text-[8px] font-bold">JD</div>
         <span class="text-[10px] font-semibold">Me</span>
     </button>
 </nav>
@@ -323,7 +323,7 @@
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-2xl">
             <div>
                 <h3 class="text-base font-bold text-slate-800">Create New Referral</h3>
-                <p class="text-xs text-slate-400 mt-0.5">AI-powered analysis via Watsonx</p>
+                <p class="text-xs text-slate-400 mt-0.5">AI-powered analysis</p>
             </div>
             <button id="closeModalBtn" class="p-2 -mr-1 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -333,19 +333,19 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Customer Name <span class="text-red-400">*</span></label>
                 <input type="text" id="customerName" required autocomplete="off"
-                       class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50"
+                       class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-reflip-blue bg-slate-50"
                        placeholder="e.g., Acme Corporation">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Customer Email</label>
                 <input type="email" id="customerEmail" autocomplete="off"
-                       class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50"
+                       class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-reflip-blue bg-slate-50"
                        placeholder="e.g., contact@acme.com">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Product Type <span class="text-red-400">*</span></label>
                 <select id="productType" required
-                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50 appearance-none">
+                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-reflip-blue bg-slate-50 appearance-none">
                     <option value="">Select product type...</option>
                     <option value="Commercial">Commercial Banking</option>
                     <option value="Retail">Retail Banking</option>
@@ -354,14 +354,14 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Customer Transcript <span class="text-red-400">*</span></label>
                 <textarea id="customerTranscript" required rows="5"
-                          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue resize-none bg-slate-50"
+                          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-reflip-blue resize-none bg-slate-50"
                           placeholder="Paste the customer conversation transcript here..."></textarea>
-                <p class="text-[10px] text-slate-400 mt-1">Analyzed by Watsonx.ai to generate insights & recommendations.</p>
+                <p class="text-[10px] text-slate-400 mt-1">Analyzed by AI to generate insights & recommendations.</p>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Urgency Level</label>
                 <select id="urgencyLevel"
-                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ibm-blue bg-slate-50 appearance-none">
+                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-reflip-blue bg-slate-50 appearance-none">
                     <option value="routine">Routine</option>
                     <option value="urgent">Urgent</option>
                     <option value="emergency">Emergency</option>
@@ -371,7 +371,7 @@
                 <div class="flex items-center gap-3">
                     <div class="spinner flex-shrink-0"></div>
                     <div>
-                        <p class="text-xs font-semibold text-blue-900">Processing with Watsonx.ai...</p>
+                        <p class="text-xs font-semibold text-blue-900">Processing with AI...</p>
                         <p class="text-[10px] text-blue-600 mt-0.5">Analyzing transcript and generating insights</p>
                     </div>
                 </div>
@@ -387,7 +387,7 @@
             </div>
             <div class="flex gap-2.5 pt-2 border-t border-slate-100">
                 <button type="button" id="cancelBtn" class="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
-                <button type="submit" id="submitBtn" class="flex-1 px-4 py-2.5 bg-ibm-blue hover:bg-ibm-blue-dark active:scale-95 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">Create Referral</button>
+                <button type="submit" id="submitBtn" class="flex-1 px-4 py-2.5 bg-reflip-blue hover:bg-reflip-blue-dark active:scale-95 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">Create Referral</button>
             </div>
         </form>
     </div>
@@ -404,7 +404,7 @@ document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', 
 // Active nav
 function setActive(s) {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section===s));
-    document.querySelectorAll('.bottom-nav-btn').forEach(b => { b.classList.toggle('text-ibm-blue', b.dataset.section===s); b.classList.toggle('text-slate-400', b.dataset.section!==s); });
+    document.querySelectorAll('.bottom-nav-btn').forEach(b => { b.classList.toggle('text-reflip-blue', b.dataset.section===s); b.classList.toggle('text-slate-400', b.dataset.section!==s); });
 }
 document.querySelectorAll('.nav-link, .bottom-nav-btn').forEach(el => el.addEventListener('click', () => setActive(el.dataset.section)));
 
@@ -469,7 +469,7 @@ function tableRow(ref, i) {
         <td class="px-5 py-3.5 w-36"><div class="space-y-1.5"><div class="flex justify-between text-xs"><span class="font-semibold text-slate-700">${d.c}%</span><span class="text-slate-400">${d.cl}</span></div><div class="confidence-bar"><div class="confidence-fill confidence-${d.cf}" style="width:${d.c}%"></div></div></div></td>
         <td class="px-5 py-3.5">${aiBadge}</td>
         <td class="px-5 py-3.5"><span class="status-badge status-${d.sync}">${d.sync==='synced'?'✓ Synced':'⏳ Pending'}</span></td>
-        <td class="px-5 py-3.5"><button class="text-ibm-blue hover:text-ibm-blue-dark font-semibold text-xs">View →</button></td>
+        <td class="px-5 py-3.5"><button class="text-reflip-blue hover:text-reflip-blue-dark font-semibold text-xs">View →</button></td>
     </tr>`;
 }
 function mobileCard(ref, i) {
@@ -488,7 +488,7 @@ function mobileCard(ref, i) {
         </div>
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">${aiBadge}<span class="status-badge status-${d.sync}">${d.sync==='synced'?'✓ Synced':'⏳ Pending'}</span></div>
-            <button class="text-ibm-blue font-semibold text-xs">View →</button>
+            <button class="text-reflip-blue font-semibold text-xs">View →</button>
         </div>
     </div>`;
 }
