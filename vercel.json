@@ -1,17 +1,22 @@
 {
-  "version": 2,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/(.*\\.(css|js|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))", "destination": "/public/$1" },
-    { "source": "/(.*)", "destination": "/api/index" }
-  ],
-  "functions": {
-    "api/index.js": {
-      "maxDuration": 30,
-      "memory": 1024
+    "version": 2,
+    "builds": [
+          {
+                  "src": "api/index.js",
+                  "use": "@vercel/node"
+          }
+    ],
+    "routes": [
+          {
+                  "src": "/api/(.*)",
+                  "dest": "/api/index.js"
+          },
+          {
+                  "src": "/(.*)",
+                  "dest": "/api/index.js"
+          }
+    ],
+    "env": {
+          "NODE_ENV": "production"
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
-  }
 }
